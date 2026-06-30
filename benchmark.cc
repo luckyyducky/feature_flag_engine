@@ -334,10 +334,10 @@ int main() {
         PrintScenarioHeader("LOW SCALE (Pure Reader, Single Thread, Small Dataset)", flags, readers, "NONE");
 
         PrintResult(RunBenchmark("Baseline (Naive Locked Map)", std::make_unique<NaiveLockedMapStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 1 (Contiguous Memory Vector)", std::make_unique<ContiguousNaiveStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 2 (Lock-Free COW Map)", std::make_unique<COWMapNaiveStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 3 (Zero-Alloc Hashing)", std::make_unique<LockedMapStackHashStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("All Combined (COW Vector + Hash)", std::make_unique<COWFlagStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Contiguous Memory Store (std::vector)", std::make_unique<ContiguousNaiveStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Copy-On-Write Store (Lock-Free Map)", std::make_unique<COWMapNaiveStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Zero-Allocation Hash Store", std::make_unique<LockedMapStackHashStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Fully Optimized Engine (COW + Bitwise Hash)", std::make_unique<COWFlagStore>(), flags, readers, write_interval, duration));
     }
 
     // ------------------------------------------------------------------------
@@ -350,10 +350,10 @@ int main() {
         PrintScenarioHeader("DATASET SCALE (Binary Search Cache-Locality Check)", flags, readers, "NONE");
 
         PrintResult(RunBenchmark("Baseline (Naive Locked Map)", std::make_unique<NaiveLockedMapStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 1 (Contiguous Memory Vector)", std::make_unique<ContiguousNaiveStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 2 (Lock-Free COW Map)", std::make_unique<COWMapNaiveStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 3 (Zero-Alloc Hashing)", std::make_unique<LockedMapStackHashStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("All Combined (COW Vector + Hash)", std::make_unique<COWFlagStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Contiguous Memory Store (std::vector)", std::make_unique<ContiguousNaiveStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Copy-On-Write Store (Lock-Free Map)", std::make_unique<COWMapNaiveStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Zero-Allocation Hash Store", std::make_unique<LockedMapStackHashStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Fully Optimized Engine (COW + Bitwise Hash)", std::make_unique<COWFlagStore>(), flags, readers, write_interval, duration));
     }
 
     // ------------------------------------------------------------------------
@@ -366,10 +366,10 @@ int main() {
         PrintScenarioHeader("CONCURRENCY SCALE (Heavy Multi-thread Write Contention)", flags, readers, "100 updates/s");
 
         PrintResult(RunBenchmark("Baseline (Naive Locked Map)", std::make_unique<NaiveLockedMapStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 1 (Contiguous Memory Vector)", std::make_unique<ContiguousNaiveStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 2 (Lock-Free COW Map)", std::make_unique<COWMapNaiveStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 3 (Zero-Alloc Hashing)", std::make_unique<LockedMapStackHashStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("All Combined (COW Vector + Hash)", std::make_unique<COWFlagStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Contiguous Memory Store (std::vector)", std::make_unique<ContiguousNaiveStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Copy-On-Write Store (Lock-Free Map)", std::make_unique<COWMapNaiveStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Zero-Allocation Hash Store", std::make_unique<LockedMapStackHashStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Fully Optimized Engine (COW + Bitwise Hash)", std::make_unique<COWFlagStore>(), flags, readers, write_interval, duration));
     }
 
     // ------------------------------------------------------------------------
@@ -382,10 +382,10 @@ int main() {
         PrintScenarioHeader("PRODUCTION SCALE (Large Dataset, High Contention Threads)", flags, readers, "100 updates/s");
 
         PrintResult(RunBenchmark("Baseline (Naive Locked Map)", std::make_unique<NaiveLockedMapStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 1 (Contiguous Memory Vector)", std::make_unique<ContiguousNaiveStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 2 (Lock-Free COW Map)", std::make_unique<COWMapNaiveStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("Innov 3 (Zero-Alloc Hashing)", std::make_unique<LockedMapStackHashStore>(), flags, readers, write_interval, duration));
-        PrintResult(RunBenchmark("All Combined (COW Vector + Hash)", std::make_unique<COWFlagStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Contiguous Memory Store (std::vector)", std::make_unique<ContiguousNaiveStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Copy-On-Write Store (Lock-Free Map)", std::make_unique<COWMapNaiveStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Zero-Allocation Hash Store", std::make_unique<LockedMapStackHashStore>(), flags, readers, write_interval, duration));
+        PrintResult(RunBenchmark("Fully Optimized Engine (COW + Bitwise Hash)", std::make_unique<COWFlagStore>(), flags, readers, write_interval, duration));
     }
 
 

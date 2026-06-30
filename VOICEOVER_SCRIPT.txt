@@ -67,18 +67,15 @@ While traditional HTTP polling can take anywhere from 1 to 50 milliseconds over 
 [SAY THIS - CODE WALKTHROUGH]:
 "Finally, let's take a quick tour of the code to see how it all fits together:
 
-First, let's open 'flag_store.cc' and look at lines 98 to 109 inside 'COWFlagStore::IsEnabled'. 
-Notice at line 99 we use 'std::atomic_load' to read our shared flag array without any locks. And at line 102, we do a binary search on a contiguous sorted 'std::vector' using zero-allocation 'std::string_view' keys. This keeps all our data packed inside CPU L1 and L2 cache lines, which is how we get our 30-nanosecond lookup speeds. In 'SetEnabled' at line 134, background updates build a new vector and atomically swap the pointer at line 147, so readers never get blocked.
+If we jump into 'flag_store.cc' around line 98 inside 'COWFlagStore::IsEnabled', you'll see how we use 'std::atomic_load' to read our shared flag array without any locks. Right below that at line 102, we do a binary search on a contiguous sorted 'std::vector' using zero-allocation 'std::string_view' keys. This keeps all our data packed inside CPU L1 and L2 cache lines, which is how we get our 30-nanosecond lookup speeds. In 'SetEnabled' at line 134, background updates build a new vector out-of-band and atomically swap the pointer at line 147 so our readers never get blocked.
 
-Second, stay in 'flag_store.cc' and look at lines 27 to 31 inside 'EvaluateRules'. 
-For sticky percentage rollouts, instead of doing slow string concatenation on the heap, we do a bitwise XOR and shift hash directly on stack registers. It calculates user buckets in just 15 nanoseconds with zero garbage collection overhead.
+Still inside 'flag_store.cc', if we look at line 27 inside 'EvaluateRules', you can see how we handle sticky percentage rollouts. Instead of doing slow string concatenation on the heap, we run a bitwise XOR and shift hash directly on stack registers. That calculates user buckets in just 15 nanoseconds without any garbage collection overhead.
 
-Third, let's click over to 'tcp_server.cc' and look at lines 273 to 305 inside 'BroadcastUpdate'. 
-When a flag is updated, we build a compact 5-byte Type-Length-Value packet at line 273 and push it directly over our TCP loopback sockets using 'send' at line 304. We don't use heavy HTTP headers or JSON parsers, which gives us instant microsecond sync across all connected clients.
+Now clicking over to 'tcp_server.cc' at line 273 inside 'BroadcastUpdate', whenever a flag is updated, we build a compact 5-byte binary Type-Length-Value packet and push it directly over our TCP loopback sockets using 'send' at line 304. By skipping heavy HTTP headers and JSON parsers, we get instant microsecond synchronization across all connected clients.
 
-Fourth, in 'admin_tui.py' and 'admin_cli.cc', developers can script mutations or use our interactive Python curses console dashboard to manage flags on the fly.
+Over in the control plane, 'admin_tui.py' and 'admin_cli.cc' let developers script mutations or use our interactive Python curses console dashboard to manage flags on the fly.
 
-And fifth, in our Flutter SDK under 'flutter_client/', our reactive client extends 'ChangeNotifier' and listens to the TCP stream. When an update arrives, it updates the cache and triggers 'notifyListeners()', allowing Flutter widgets wrapped in 'ListenableBuilder' to rebuild dynamically in real-time."
+And finally, looking at our Flutter SDK under 'flutter_client/', our reactive client extends 'ChangeNotifier' and listens to the TCP stream. When an update comes in, it updates the cache and triggers 'notifyListeners()', allowing Flutter UI widgets wrapped in 'ListenableBuilder' to rebuild dynamically in real-time."
 
 --> [ACTION]: Press [ENTER] in your terminal to finish.
 
