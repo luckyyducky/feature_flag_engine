@@ -1,0 +1,16 @@
+name: feature_flag_client
+description: A high-performance, real-time feature flag and remote config SDK for Flutter/Dart. Connects to the C++ Feature Flag TCP Engine with lock-free reads and offline fallback cache.
+version: 1.0.0
+homepage: https://github.com/aishwaryapundr/feature_flag_engine
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
