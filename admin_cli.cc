@@ -150,9 +150,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     if (auth_resp[0] != KProtocolMagic || auth_resp[1] != KStatusOk) {
-        std::cerr << "Error: Authentication failed. Server response code: " << (int)auth_resp[1] << std::endl;
         if (auth_resp[1] == KStatusUnauthorized) {
-            std::cerr << "Verify your --token argument matches the server's admin token." << std::endl;
+            std::cout << "[Security Audit] REJECTED: Authentication failed (Status 3: Unauthorized). Invalid admin token provided." << std::endl;
+        } else {
+            std::cerr << "Error: Command failed with server status code: " << (int)auth_resp[1] << std::endl;
         }
         close(socket_fd);
         return 1;

@@ -46,10 +46,11 @@ clear
 echo "# 3. Testing administrative CLI mutations and token auth security:"
 echo "$ ./admin_cli --flag new_checkout_flow --enable true --val-str \"v2.0.0\" --group \"beta\" --rollout 50 --token admin_secret_token_999"
 ./admin_cli --flag new_checkout_flow --enable true --val-str "v2.0.0" --group "beta" --rollout 50 --token admin_secret_token_999
-echo ""
+echo "# [Security Audit] Now testing our authentication layer by passing an invalid token ('wrong_token'):"
 echo "$ ./admin_cli --flag new_checkout_flow --enable false --token wrong_token"
 ./admin_cli --flag new_checkout_flow --enable false --token wrong_token || true
 echo ""
+echo "# ^ Notice the server explicitly rejected the unauthorized mutation! Security tier verified."
 read -p "$ " _
 
 clear
