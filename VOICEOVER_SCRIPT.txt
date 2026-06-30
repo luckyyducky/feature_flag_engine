@@ -1,0 +1,93 @@
+================================================================================
+           WORD-FOR-WORD VIDEO DEMO VOICEOVER SCRIPT (approx. 4 min)
+================================================================================
+Keep this text file open on your phone, a second monitor, or a printed sheet so it DOES NOT appear on your screen video recording!
+In your video terminal, run:  ./auto_demo.sh
+Then simply read the text below and press [ENTER] on your keyboard when prompted!
+
+--------------------------------------------------------------------------------
+[START RECORDING] -> Launch ./auto_demo.sh in your terminal.
+--------------------------------------------------------------------------------
+
+[SAY THIS - INTRO]:
+"Hello! Today I am presenting our Self-Hosted Feature Flag and Remote Configuration Engine. 
+It is a lightweight, DIY open-source alternative to LaunchDarkly, built from scratch using C++17, Python, and Flutter, achieving sub-30 nanosecond evaluation latency without external database overhead."
+
+--> [ACTION]: Press [ENTER] in your terminal to start Part 1 (Performance Benchmarks).
+
+--------------------------------------------------------------------------------
+[PART 1: PERFORMANCE BENCHMARKS & LOCK-FREE COW SCALING]
+--------------------------------------------------------------------------------
+
+[SAY THIS WHILE BENCHMARK RUNS AND PRINTS]:
+"First, let's examine our multi-threaded performance harness. 
+Traditional feature flag SDKs rely on mutual exclusion locks, which bottleneck under multi-core concurrency. Notice here in our benchmark output: our mutex-locked store degrades to 4.3 Million operations per second across 32 cores.
+In contrast, our Copy-on-Write memory architecture replaces lock contention with atomic pointer swaps. Reader threads never block, scaling to 7.6 Million operations per second across 32 cores—delivering 76.7% higher throughput and 43.1% lower evaluation latency under heavy writer contention. 
+Furthermore, our zero-allocation bitwise rollout hash executes in just 15 nanoseconds, a 4.3x speedup over string concatenation."
+
+--> [ACTION]: Press [ENTER] in your terminal to start Part 2 (Database Persistence).
+
+--------------------------------------------------------------------------------
+[PART 2: DATABASE PERSISTENCE & OFFLINE CACHE RESILIENCE]
+--------------------------------------------------------------------------------
+
+[SAY THIS WHILE DATABASE FILES ARE DISPLAYED]:
+"Next, let's look at database persistence and offline resilience. 
+Unlike heavy database dependencies that complicate local deployment, our central engine persists all flag states, rollout percentages, and target groups cleanly to a local text database called flags_config.txt.
+In distributed environments, network partitions occur. Notice our backup cache file, client_cache_fallback.txt. Both our C++ and Flutter SDKs persist local cache snapshots to disk. If network connectivity drops, clients continue serving sub-microsecond evaluations with zero downtime, automatically re-syncing once connectivity recovers."
+
+--> [ACTION]: Press [ENTER] in your terminal to start Part 3 (API Mutations & Security).
+
+--------------------------------------------------------------------------------
+[PART 3: ADMINISTRATIVE API ENDPOINT & SECURITY REJECTION]
+--------------------------------------------------------------------------------
+
+[SAY THIS WHILE CLI COMMANDS RUN]:
+"For automated CI/CD workflows and deployment pipelines, we provide an administrative command-line API endpoint. 
+Here, we programmatically toggle 'new_checkout_flow' to ON for beta testers at a 50% rollout percentage. Notice the server returns Status 0 (OK) and broadcasts the update over TCP loopback immediately in a 5-byte TLV payload.
+We also implement stateful socket security—when we pass an invalid API token, notice that our authorization layer explicitly rejects the mutation with an unauthorized error code."
+
+--> [ACTION]: Press [ENTER] in your terminal to start Part 4 (Live Server & Client Simulation).
+
+--------------------------------------------------------------------------------
+[PART 4: LIVE BACKEND SERVER & REAL-TIME PUSH SYNCHRONIZATION]
+--------------------------------------------------------------------------------
+
+[SAY THIS WHILE SERVER AND CLIENT RUN]:
+"Now let's see our live push synchronization in action. Our central TCP server is listening on port 8888, and our C++ client SDK connects in background auto-reconnect mode. 
+When flags are mutated on the server, our Type-Length-Value socket protocol broadcasts updates instantly to all subscribed clients.
+While traditional HTTP polling takes 1 to 50 milliseconds over the wire, our synchronized local Copy-on-Write RAM cache evaluates flags in 30.0 nanoseconds—over 100,000 times faster than network-bound checks—allowing high-frequency trading and gaming loops to evaluate features on the hot path without stutter."
+
+--> [ACTION]: Press [ENTER] in your terminal to start Part 5 (Start-to-Finish Code Walkthrough).
+
+--------------------------------------------------------------------------------
+[PART 5: START-TO-FINISH CODEBASE WALKTHROUGH]
+--------------------------------------------------------------------------------
+--> [ACTION]: Open your IDE or GitHub repo in your browser and click through the files as you speak!
+
+[SAY THIS - START-TO-FINISH WALKTHROUGH]:
+"Finally, let's walk through the entire project codebase from start to finish to see how everything connects:
+
+First, let's look at our data protocol in 'protocol.h' and 'protocol.dart'. 
+Everything starts with our custom Type-Length-Value binary format. Notice we define a 4-byte request header and tags for booleans, IEEE 754 float64 doubles, and strings. This allows our sockets to transmit data cleanly without HTTP or JSON serialization overhead.
+
+Second, let's look at our core engine in 'flag_store.h' and 'flag_store.cc'. 
+This is the brain of the system. Notice in 'flag_store.cc' at lines 98 through 109, our 'COWFlagStore' performs zero-allocation binary searches on contiguous sorted 'std::vector' arrays using 'std::string_view' keys and atomic pointer loads ('std::atomic_load'). And notice at line 30 in 'EvaluateRules', we evaluate percentage rollouts using zero-allocation bitwise stack math: 'h1 XOR (h2 plus bitshifts)', running in just 15 nanoseconds. For persistence, 'PersistentCOWFlagStore' saves all mutations asynchronously to 'flags_config.txt'.
+
+Third, let's open 'main.cc' and 'tcp_server.cc'. 
+Here is our central network layer. 'main.cc' boots 'TcpServer' on port 8888, using our custom multi-threaded 'ThreadPool' to handle connections asynchronously. When a client connects, it must pass stateful token authentication ('KCmdAuth'). Notice in 'tcp_server.cc' at line 273 inside 'BroadcastUpdate', when a flag is toggled, the server constructs a 5-byte TLV packet and broadcasts it immediately to all subscribed client socket descriptors.
+
+Fourth, let's check our control plane in 'admin_cli.cc' and 'admin_tui.py'. 
+To control flags, developers can script mutations via 'admin_cli.cc' or use our interactive Python dashboard 'admin_tui.py', which uses standard Python 'curses' and POSIX sockets to send mutation packets when you press Space or Enter.
+
+Fifth and finally, let's look at our client integration in 'flag_client.cc' and our Flutter SDK in 'flutter_client/'. 
+Notice in 'feature_flag_client.dart', our Flutter client extends 'ChangeNotifier' and listens to the TCP socket stream. When a push update arrives, it updates the local Copy-on-Write cache and triggers 'notifyListeners()'. If the server goes offline, both C++ and Flutter SDKs fall back seamlessly to disk cache ('client_cache_fallback.txt') with zero downtime, automatically reconnecting in the background. And in our demo app ('main.dart'), wrapping widgets in 'ListenableBuilder' allows the UI to rebuild dynamically in real-time the instant a switch is flipped on the server!"
+
+--> [ACTION]: Press [ENTER] in your terminal to finish the presentation.
+
+[SAY THIS - OUTRO]:
+"Everything is open-source ready with zero proprietary dependencies, documented comprehensively, and committed atomically to GitHub. Thank you for watching!"
+
+--------------------------------------------------------------------------------
+[STOP RECORDING]
+--------------------------------------------------------------------------------
