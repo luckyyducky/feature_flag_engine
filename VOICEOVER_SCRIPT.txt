@@ -1,86 +1,81 @@
 ================================================================================
-           CONVERSATIONAL & NATURAL DEMO VOICEOVER SCRIPT
+            SHORT & CONCISE DEMO VOICEOVER SCRIPT (~2 mins)
 ================================================================================
-Keep this open on your phone or split screen so it's NOT on your video!
-In your VS Code terminal, run:  ./auto_demo.sh
-Then just speak naturally and tap [ENTER] when prompted!
+Keep this open on your phone or split screen. In VS Code terminal, run:  ./auto_demo.sh
+Speak naturally and tap [ENTER] when prompted!
 
 --------------------------------------------------------------------------------
 [START RECORDING] -> Run ./auto_demo.sh in your terminal.
 --------------------------------------------------------------------------------
 
 [SAY THIS - INTRO]:
-"Hey everyone! Today I want to show you our Self-Hosted Feature Flag and Remote Configuration Engine. 
-We basically built a lightweight, DIY alternative to tools like LaunchDarkly from scratch using C++17, Python, and Flutter. Our main goal was to eliminate database latency and network bottlenecks, getting feature evaluations down to under 30 nanoseconds."
+"Hey everyone! Today I'm presenting our Self-Hosted Feature Flag and Remote Configuration Engine. 
+We built a lightweight alternative to LaunchDarkly from scratch using C++17, Python, and Flutter, designed to eliminate database bottlenecks and achieve sub-30 nanosecond evaluation speeds."
 
 --> [ACTION]: Press [ENTER] in your terminal to run the benchmark.
 
 --------------------------------------------------------------------------------
-[STEP 1: PERFORMANCE BENCHMARK & COPY-ON-WRITE SCALING]
+[STEP 1: PERFORMANCE BENCHMARK]
 --------------------------------------------------------------------------------
 
 [SAY THIS WHILE BENCHMARK RUNS]:
-"So first up, let's look at performance. Most feature flag SDKs use standard mutex locks, which really start to choke when you throw a lot of threads at them at once. 
-As you can see in our benchmark output here, when we run 32 threads, a mutex-locked store drops down to about 4.3 million operations a second. 
-To fix this, we built a lock-free Copy-on-Write architecture using atomic pointer swaps. Our reader threads never block, so we're hitting 7.6 million ops a second across 32 cores—that's roughly 76% higher throughput and much lower latency under heavy load. Also, our bitwise rollout hashing takes just 15 nanoseconds, over 4 times faster than standard string concatenation."
+"First up, performance. Most SDKs use standard mutex locks, which degrade under high concurrency—dropping to 4.3 million ops a second across 32 cores here. 
+To solve this, we built a lock-free Copy-on-Write architecture using atomic pointer swaps. Our readers never block, hitting 7.6 million ops a second—giving us 76% higher throughput. Plus, our bitwise rollout hashing takes just 15 nanoseconds, over 4 times faster than standard string concatenation."
 
---> [ACTION]: Press [ENTER] in your terminal to view the database and cache files.
+--> [ACTION]: Press [ENTER] in your terminal to view database/cache files.
 
 --------------------------------------------------------------------------------
-[STEP 2: DATABASE PERSISTENCE & OFFLINE FALLBACK CACHE]
+[STEP 2: DATABASE PERSISTENCE & OFFLINE CACHE]
 --------------------------------------------------------------------------------
 
 [SAY THIS WHILE FILES PRINT]:
-"Next, let's check out how we handle storage and offline resilience. 
-Instead of relying on a heavy database that complicates local deployment, our central server saves all flag states, target groups, and rollout rules to a clean local text file called flags_config.txt. 
-We also handle network failures seamlessly. You can see our backup cache file here, client_cache_fallback.txt. Both our C++ and Flutter clients save snapshots locally to disk. So if the network ever drops or the server restarts, the app keeps running sub-microsecond evaluations from local cache without any downtime, and auto-syncs in the background once the connection is back."
+"Next is storage and offline resilience. Instead of a heavy database, our server saves all flag rules cleanly to a local file called flags_config.txt. 
+We also handle network failures seamlessly. You can see our backup cache file here, client_cache_fallback.txt. Both our C++ and Flutter clients save local cache snapshots, so if the network drops, the app keeps running sub-microsecond evaluations with zero downtime."
 
---> [ACTION]: Press [ENTER] in your terminal to run the CLI mutations.
+--> [ACTION]: Press [ENTER] in your terminal to run CLI mutations.
 
 --------------------------------------------------------------------------------
-[STEP 3: ADMINISTRATIVE CLI API & SECURITY REJECTION]
+[STEP 3: CLI API & SECURITY REJECTION]
 --------------------------------------------------------------------------------
 
 [SAY THIS WHILE CLI COMMANDS RUN]:
-"For automated CI/CD pipelines, we built a command-line admin tool. 
-Here, we're programmatically turning on 'new_checkout_flow' for beta users at a 50% rollout percentage. You can see the server returns Status 0 (OK) and broadcasts the update over our TCP loopback immediately. 
-We also built in stateful socket authentication. When we try passing an invalid token like 'wrong_token', the server's auth layer catches it right away and rejects the mutation."
+"For CI/CD pipelines, we built a command-line admin tool. Here, we programmatically turn on 'new_checkout_flow' at a 50% rollout. Notice the server returns Status 0 (OK) and broadcasts the update over TCP loopback instantly. 
+We also implement stateful socket security. Notice when we pass an invalid token like 'wrong_token', the auth layer explicitly rejects the mutation."
 
---> [ACTION]: Press [ENTER] in your terminal to run the live push client.
+--> [ACTION]: Press [ENTER] in your terminal to run live client sync.
 
 --------------------------------------------------------------------------------
-[STEP 4: LIVE SERVER & REAL-TIME PUSH SYNCHRONIZATION]
+[STEP 4: REAL-TIME PUSH SYNCHRONIZATION]
 --------------------------------------------------------------------------------
 
 [SAY THIS WHILE CLIENT SYNC RUNS]:
-"Now let's see real-time push synchronization in action. Our central TCP server is running on port 8888, and our C++ simulator is listening for updates. 
-Whenever a flag changes on the server, our custom Type-Length-Value protocol pushes the update over TCP instantly. 
-While traditional HTTP polling can take anywhere from 1 to 50 milliseconds over the network, our local Copy-on-Write RAM cache evaluates flags in 30 nanoseconds—over 100,000 times faster—which is perfect for high-frequency trading or gaming loops where you can't afford any stutter."
+"Now let's see real-time push synchronization. Our server is running on port 8888 with our client listening. 
+Whenever a flag changes, our custom Type-Length-Value protocol pushes the update over TCP instantly. While HTTP polling takes 1 to 50 milliseconds, our local Copy-on-Write RAM cache evaluates flags in 30 nanoseconds—over 100,000 times faster."
 
---> [ACTION]: Press [ENTER] in your terminal to switch to the code walkthrough.
+--> [ACTION]: Press [ENTER] in your terminal to switch to code walkthrough.
 
 --------------------------------------------------------------------------------
-[STEP 5: CODEBASE WALKTHROUGH IN VS CODE]
+[STEP 5: QUICK CODE WALKTHROUGH IN VS CODE]
 --------------------------------------------------------------------------------
---> [ACTION]: Use your mouse to click on the files in your VS Code sidebar as you talk about them!
+--> [ACTION]: Use your mouse to click on the files in your VS Code sidebar!
 
 [SAY THIS - CODE WALKTHROUGH]:
-"Finally, let's take a quick tour of the code to see how it all fits together:
+"Finally, let's take a quick look at the implementation:
 
-If we jump into 'flag_store.cc' around line 98 inside 'COWFlagStore::IsEnabled', you'll see how we use 'std::atomic_load' to read our shared flag array without any locks. Right below that at line 102, we do a binary search on a contiguous sorted 'std::vector' using zero-allocation 'std::string_view' keys. This keeps all our data packed inside CPU L1 and L2 cache lines, which is how we get our 30-nanosecond lookup speeds. In 'SetEnabled' at line 134, background updates build a new vector out-of-band and atomically swap the pointer at line 147 so our readers never get blocked.
+In 'flag_store.cc' around line 98 inside 'COWFlagStore::IsEnabled', notice how we use 'std::atomic_load' to read our flag array without locks. At line 102, we do a binary search on a contiguous sorted vector using zero-allocation string views, keeping data in CPU cache lines. And in 'SetEnabled' at line 134, background writers build a new vector and atomically swap the pointer at line 147 so readers never block.
 
-Still inside 'flag_store.cc', if we look at line 27 inside 'EvaluateRules', you can see how we handle sticky percentage rollouts. Instead of doing slow string concatenation on the heap, we run a bitwise XOR and shift hash directly on stack registers. That calculates user buckets in just 15 nanoseconds without any garbage collection overhead.
+Still in 'flag_store.cc' at line 27 inside 'EvaluateRules', notice how our sticky percentage rollouts use bitwise XOR and shift math on stack registers, running in just 15 nanoseconds without heap allocation.
 
-Now clicking over to 'tcp_server.cc' at line 273 inside 'BroadcastUpdate', whenever a flag is updated, we build a compact 5-byte binary Type-Length-Value packet and push it directly over our TCP loopback sockets using 'send' at line 304. By skipping heavy HTTP headers and JSON parsers, we get instant microsecond synchronization across all connected clients.
+In 'tcp_server.cc' at line 273 inside 'BroadcastUpdate', when a flag changes, we build a compact 5-byte binary packet and push it over our TCP socket using 'send' at line 304—giving us instant microsecond sync without HTTP overhead.
 
-Over in the control plane, 'admin_tui.py' and 'admin_cli.cc' let developers script mutations or use our interactive Python curses console dashboard to manage flags on the fly.
+Over in our control plane, 'admin_tui.py' and 'admin_cli.cc' let developers script mutations or use our interactive Python curses console dashboard on the fly.
 
-And finally, looking at our Flutter SDK under 'flutter_client/', our reactive client extends 'ChangeNotifier' and listens to the TCP stream. When an update comes in, it updates the cache and triggers 'notifyListeners()', allowing Flutter UI widgets wrapped in 'ListenableBuilder' to rebuild dynamically in real-time."
+And looking at our Flutter SDK in 'flutter_client/', our reactive client extends 'ChangeNotifier' and listens to the TCP stream. When updates arrive, it updates local cache and triggers 'notifyListeners()', allowing Flutter UI widgets in 'ListenableBuilder' to rebuild dynamically in real-time."
 
 --> [ACTION]: Press [ENTER] in your terminal to finish.
 
 [SAY THIS - OUTRO]:
-"And that's our project! Everything is open-source ready with zero proprietary dependencies and cleanly documented. Thanks for watching!"
+"And that's our open-source engine—lightweight, lock-free, and super fast! Thanks for watching!"
 
 --------------------------------------------------------------------------------
 [STOP RECORDING]
