@@ -2,7 +2,7 @@
 set -e
 
 # Ensure binaries are compiled and ready silently
-g++ -std=c++17 main.cc flag_store.cc tcp_server.cc -o server -pthread 2>/dev/null || true
+g++ -std=c++17 main.cc flag_store.cc tcp_server.cc thread_pool.cc -o server -pthread 2>/dev/null || true
 g++ -std=c++17 client_main.cc flag_client.cc flag_store.cc -o client -pthread 2>/dev/null || true
 g++ -std=c++17 admin_cli.cc -o admin_cli 2>/dev/null || true
 g++ -std=c++17 benchmark.cc flag_store.cc -o benchmark -pthread 2>/dev/null || true
